@@ -8,14 +8,17 @@
     </div>
 
     <div class="center-section" v-if="searchQuery !== undefined">
-      <input
-        type="text"
-        :value="searchQuery"
-        @input="$emit('update:searchQuery', $event.target.value)"
-        placeholder="Search books..."
-        class="search-bar"
-      />
+      <div class="search-wrapper">
+        <input
+          type="text"
+          :value="searchQuery"
+          @input="$emit('update:searchQuery', $event.target.value)"
+          placeholder="Search books..."
+          class="search-bar"
+        />
+      </div>
     </div>
+
   </header>
 </template>
 
@@ -49,6 +52,8 @@ defineEmits(['update:searchQuery'])
 .left-section {
   display: flex;
   align-items: center;
+  flex-shrink: 1;       
+  min-width: 0;         
 }
 
 .logo-link {
@@ -56,6 +61,7 @@ defineEmits(['update:searchQuery'])
   align-items: center;
   text-decoration: none;
   color: inherit;
+  flex-wrap: nowrap;   
 }
 
 .logo {
@@ -68,17 +74,43 @@ defineEmits(['update:searchQuery'])
 }
 
 .center-section {
-  flex: 1;
-  display: flex;
-  justify-content: center;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 50vw; 
+}
+
+.search-wrapper {
+  max-width: 50vw;
+  width: 100%;
 }
 
 .search-bar {
-  display: fixed;
-  width: 50%;
+  width: 100%;
   padding: 6px;
   font-size: 1rem;
   border-radius: 4px;
   border: none;
+}
+
+
+@media (max-width: 768px) {
+  .search-wrapper {
+    max-width: 90vw;
+  }
+
+  .title {
+    font-size: 1rem;
+  }
+
+  .logo {
+    height: 30px;
+  }
+
+  .search-bar {
+    font-size: 0.9rem;
+  }
 }
 </style>

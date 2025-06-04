@@ -48,7 +48,7 @@ watchEffect(async () => {
 <style scoped>
 .book-card {
   width: 100%;
-  height: 300px; /* or auto with min-height */
+  height: 300px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -56,6 +56,7 @@ watchEffect(async () => {
   overflow: hidden;
   border-radius: 8px;
   cursor: pointer;
+  border-radius: 0; 
 }
 .image-container {
   position: relative;
@@ -75,7 +76,7 @@ watchEffect(async () => {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.6); /* dim effect */
+  background-color: rgba(0, 0, 0, 0.6);
   color: white;
   opacity: 0;
   display: flex;
@@ -102,7 +103,7 @@ watchEffect(async () => {
   
   font-size: clamp(1rem, 2vw, 1.3rem);
   max-width: 100%;
-  word-wrap: break-word; /* allow breaking if necessary */
+  word-wrap: break-word; 
 }
 
 .book-author {
@@ -115,7 +116,7 @@ watchEffect(async () => {
 .book-price {
   font-size: 1.25rem;
   font-weight: 700;
-  color: white; /* a nice bright blue */
+  color: white;
 }
 
 .book-stock {

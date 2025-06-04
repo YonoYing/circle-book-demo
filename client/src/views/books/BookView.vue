@@ -6,7 +6,9 @@ import HeaderBar from '../../components/HeaderBar.vue' // ⬅ Import the header
 const route = useRoute()
 const book = ref(null)
 const googleBook = ref(null)
-const searchQuery = ref('')
+const googleBookResponse = ref(false)
+
+const coverUrl = ref('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1yg_rIUE_FzrkgJGIrpCu_e45OFLXH5GByg&s')
 
 const fetchBook = async () => {
   try {
@@ -29,9 +31,9 @@ const fetchGoogleBook = async (isbn) => {
   } catch (err) {
     console.error('Error fetching from Google Books API:', err)
   }
+  googleBookResponse.value = true
 }
 
-// Watch for when book.value is set, then fetch Google Books data
 watch(book, (newBook) => {
   if (newBook?.isbn) {
     fetchGoogleBook(newBook.isbn)
@@ -39,26 +41,65 @@ watch(book, (newBook) => {
 })
 
 onMounted(fetchBook)
+
+const handleBuyButtonClick = async () => {
+  try {
+    const response = await fetch(`http://localhost:8000/books/${route.params.id}/purchase`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        bookId: book.id,  
+      }),
+    })
+    
+    if (response.ok) {
+      const data = await response.json()
+      book.value = data.book
+    } else {
+      alert('There was an error processing your purchase.')
+    }
+  } catch (error) {
+    console.error('Error with the POST request:', error)
+    alert('There was an error processing your purchase.')
+  }
+}
 </script>
 
 <template>
   <HeaderBar/>
 
-  <div v-if="book && googleBook" class="book-container">
+  <div v-if="book && googleBookResponse" class="book-container">
     <div class="left-half">
       <img
-        v-if="googleBook.imageLinks?.large || googleBook.imageLinks?.thumbnail"
+        v-if="googleBook && (googleBook.imageLinks?.large || googleBook.imageLinks?.thumbnail)"
         :src="googleBook.imageLinks.large || googleBook.imageLinks.thumbnail"
-        alt="Book Cover"
+        alt="coverUrl"
+      />
+      <img
+        v-else
+        :src="coverUrl"
       />
     </div>
 
     <div class="right-half">
-      <h1>{{ book.title }}</h1>
-      <p><strong>{{ book.author }}</strong> | {{ googleBook.publishedDate || 'Unknown' }}</p>
-      <p class="blurb">{{ googleBook.description || 'No description available.' }}</p>
+      <h1 class="book-title">{{ book.title }}</h1>
+      <p class="book-author"><strong>{{ book.author }}</strong> | {{ googleBook.publishedDate || 'Unknown' }}</p>
+      <p class="blurb">{{ googleBook?.description || 'No description available.' }}</p>
       <p class="book-price"><strong>Price:</strong> ${{ book.price?.toFixed(2) || 'N/A' }}</p>
-      <button class="buy-button">Buy Now</button>
+      <button 
+        v-if="book.availableStock > 0"
+        @click="handleBuyButtonClick" 
+        class="buy-button">
+        Buy Now
+      </button>
+      <button 
+        v-else
+        disabled
+        class="out-of-stock-button">
+        Out of Stock
+      </button>
     </div>
   </div>
 
@@ -70,8 +111,8 @@ onMounted(fetchBook)
 <style scoped>
 .book-container {
   display: flex;
-  width: 200%;              /* Only take up 75% of the screen */
-  margin: 100px auto 20px; /* Center it horizontally */
+  width: 200%;              
+  margin: 100px auto 20px; 
   gap: 40px;
   align-items: stretch;
 }
@@ -87,11 +128,12 @@ onMounted(fetchBook)
 }
 
 .left-half img {
-  height: 400px;       /* Fixed height */
-  width: auto;         /* Maintain aspect ratio */
+  height: 400px;       
+  width: auto;        
   object-fit: contain;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 0; 
 }
 
 .right-half {
@@ -100,21 +142,33 @@ onMounted(fetchBook)
   justify-content: flex-start;
 }
 
+.book-author {
+  line-height: 1.6;
+  color: rgba(0, 0, 0, 0.782);
+}
+
 .blurb {
   margin: 20px 0;
   line-height: 1.6;
+  color: rgba(0, 0, 0, 0.782);
 }
 
 .book-price {
   font-size: 1.25rem;
   font-weight: 700;
-  color: white;
+  color: rgba(0, 0, 0, 0.782);
   margin-bottom: 20px;
 }
 
+.book-title {
+  font-size: 2rem;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.782);
+}
+
 .buy-button {
-  background-color: #007bff;
-  color: white;
+  background-color: #2c3e50;
+  color: rgba(255, 255, 255, 0.782);
   border: none;
   padding: 12px 20px;
   font-size: 1rem;
@@ -124,8 +178,18 @@ onMounted(fetchBook)
   max-width: 200px;
 }
 
+.out-of-stock-button {
+  background-color: #5b5b5bc2;
+  color: rgba(255, 255, 255, 0.782);
+  border: none;
+  padding: 12px 20px;
+  font-size: 1rem;
+  border-radius: 6px;
+  max-width: 200px;
+}
+
 .buy-button:hover {
-  background-color: #0056b3;
+  background-color: #23313f;
 }
 
 @media (max-width: 768px) {
@@ -142,7 +206,7 @@ onMounted(fetchBook)
 
   .left-half img {
     width: 100%;
-    height: auto;     /* Overrides the fixed desktop height */
+    height: auto;    
   }
 
   .right-half {
