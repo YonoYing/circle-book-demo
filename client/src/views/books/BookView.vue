@@ -12,7 +12,7 @@ const coverUrl = ref('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1yg
 
 const fetchBook = async () => {
   try {
-    const response = await fetch(`http://localhost:8000/books/${route.params.id}`)
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/books/${route.params.id}`)
     if (!response.ok) throw new Error('Book not found')
     const data = await response.json()
     book.value = data.book
@@ -44,7 +44,7 @@ onMounted(fetchBook)
 
 const handleBuyButtonClick = async () => {
   try {
-    const response = await fetch(`http://localhost:8000/books/${route.params.id}/purchase`, {
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/books/${route.params.id}/purchase`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

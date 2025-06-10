@@ -39,7 +39,7 @@ const genres = [
 
 const fetchBooks = async () => {
   try {
-    const response = await fetch('http://localhost:8000/books')
+    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/books`)
     const data = await response.json()
     books.value = data
   } catch (error) {
@@ -48,10 +48,6 @@ const fetchBooks = async () => {
 }
 
 onMounted(fetchBooks)
-
-watch(searchQuery, (newVal) => {
-  console.log('Search query changed:', newVal)
-})
 
 const filteredBooks = computed(() => {
   const booksArray = books.value?.books || [];
