@@ -2,7 +2,6 @@
   <header class="taskbar">
     <div class="left-section">
       <router-link to="/" class="logo-link">
-        <img alt="Logo" class="logo" />
         <h1 class="title">BookStore</h1>
       </router-link>
     </div>
