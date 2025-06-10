@@ -14,7 +14,7 @@
           :value="searchQuery"
           @input="$emit('update:searchQuery', $event.target.value)"
           placeholder="Search books..."
-          class="search-bar"
+            class="search-bar"
         />
       </div>
     </div>
@@ -23,14 +23,8 @@
 </template>
 
 <script setup>
-const props = defineProps({
-  searchQuery: {
-    type: String,
-    required: false,
-  }
-})
-
-defineEmits(['update:searchQuery'])
+  defineProps(['searchQuery'])
+  defineEmits(['update:searchQuery'])
 </script>
 
 <style scoped>

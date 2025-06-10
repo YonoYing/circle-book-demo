@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import HeaderBar from '../../components/HeaderBar.vue' // ⬅ Import the header
+import HeaderBar from '../../components/HeaderBar.vue'
 
 const route = useRoute()
 const book = ref(null)

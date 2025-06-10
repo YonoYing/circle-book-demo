@@ -2,31 +2,26 @@
   <div class="page-container">
     <HeaderBar v-model:searchQuery="searchQuery" />
 
-    <aside class="genre-filter">
-      <h2 class="genre-title"><strong>Genres</strong></h2>
-      <ul class="genre-list">
-        <li v-for="genre in genres" :key="genre" class="genre-item">
-          <a href="#">{{ genre }}</a>
-        </li>
-      </ul>
-    </aside>
-    
-  <main class="content-wrapper">
-    <div  class="book-grid-container">
-      <div class="book-grid">
-        <div v-for="book in books.books" :key="book.id">
-          <BookCard :book="book" />
-        </div>
-      </div>
-    </div >
-  </main>
+    <div class="layout-container">
+      <GenreList />
+      <main class="content-wrapper">
+        <div  class="book-grid-container">
+          <div class="book-grid">
+            <div v-for="book in filteredBooks" :key="book.id" class="grid-item">
+              <BookCard :book="book" />
+            </div>
+          </div>
+        </div >
+      </main>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import BookCard from '../../components/BookCard.vue'
 import HeaderBar from '../../components/HeaderBar.vue'
+import GenreList from '../../components/GenreList.vue'
 
 const books = ref([])
 const searchQuery = ref('')
@@ -54,10 +49,22 @@ const fetchBooks = async () => {
 
 onMounted(fetchBooks)
 
+watch(searchQuery, (newVal) => {
+  console.log('Search query changed:', newVal)
+})
+
 const filteredBooks = computed(() => {
-  return books.value.filter(book =>
-    book.title.toLowerCase().includes(searchQuery.value.toLowerCase())
-  )
+  const booksArray = books.value?.books || [];
+  const searchTerm = searchQuery.value.trim().toLowerCase(); 
+  
+  if (!searchTerm) return books.value.books;
+
+  const filterResult = booksArray.filter(book => {
+    const title = book?.title?.toLowerCase() || '';
+    return title.includes(searchTerm);
+  })
+
+  return filterResult
 })
 </script>
 
@@ -65,17 +72,29 @@ const filteredBooks = computed(() => {
 .book-grid-container {
   flex: 1;
   display: flex;
-  justify-content: center;
+  justify-content: left;
   padding: 100px 20px 20px;
 }
 
 .book-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 20px;
   max-width: 1200px; 
   width: 100%;
-  margin: 0 auto;
+  margin: 0;
+  box-sizing: border-box; 
+  overflow-x: hidden; 
+  justify-content: center;
+}
+
+.grid-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  aspect-ratio: 2 / 3;
+  max-width: 250px; 
+  min-width: 150px; 
 }
 
 .page-container {
@@ -93,59 +112,38 @@ const filteredBooks = computed(() => {
   padding: 100px 20px 20px;
   width: 100%;
   box-sizing: border-box;
-}
-
-.genre-filter {
-  width: 220px;
-  background-color: rgba(241, 247, 255, 0.842);
-  padding: 20px;
-  margin-top: 100px;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.247);
-  font-family: 'Segoe UI', sans-serif;
-  height: max-content;
-  border-radius: 0; 
+  flex: 1;
+  width: 80%;
   position: fixed;
-  top: 100px;
-  left: 100px;
+  left: 20%;
+  top: 0px;
 }
 
-.genre-title {
-  font-size: 1.3rem;
-  font-weight: 100;
-  margin-bottom: 16px;
-  color: black;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 8px;
-}
-
-.genre-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.genre-item {
-  margin-bottom: 12px;
-}
-
-.genre-item a {
-  display: inline-block;
+.layout-container {
+  display: flex;
   width: 100%;
-  padding: 6px 10px;
-  border-radius: 4px;
-  text-decoration: none;
-  color: black;
-  transition: background-color 0.2s ease;
+  box-sizing: border-box;
+  padding: 100px 20px 20px;
+  align-items: flex-start;
 }
 
-.genre-item a:hover {
-  background-color: #ecf0f1;
-}
+@media (max-width: 1000px) {
+  .layout-container {
+    flex-direction: column;
+    align-items: center;
+  }
 
-@media (max-width: 768px) {
+  .content-wrapper {
+    padding: 0;
+    width: 100%;
+    position: static;
+  }
+  .book-grid-container {
+    justify-content: center;
+  }
   .book-grid {
     max-width: 50vw;
+    grid-template-columns: 1fr;
   }
 }
 </style>

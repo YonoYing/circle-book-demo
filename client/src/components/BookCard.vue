@@ -32,7 +32,7 @@ watchEffect(async () => {
 </script>
 
 <template>
-  <div class="book-card" @click="goToBook" style="cursor:pointer;">
+  <div class="book-card" @click="goToBook">
     <div class="image-container">
       <img :src="coverUrl" alt="Book cover" class="book-cover" />
       <div class="overlay">
@@ -48,10 +48,10 @@ watchEffect(async () => {
 <style scoped>
 .book-card {
   width: 100%;
-  height: 300px;
+  aspect-ratio: 2/3;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
   position: relative;
   overflow: hidden;
   border-radius: 8px;
