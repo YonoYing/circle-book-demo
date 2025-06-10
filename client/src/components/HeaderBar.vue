@@ -40,13 +40,14 @@
   padding: 10px 20px;
   z-index: 1000;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  gap: 20px;
 }
 
 .left-section {
   display: flex;
   align-items: center;
   flex-shrink: 1;       
-  min-width: 0;         
+  min-width: 120px;         
 }
 
 .logo-link {
@@ -73,6 +74,9 @@
   top: 50%;
   transform: translate(-50%, -50%);
   width: 50vw; 
+  flex: 1 1 auto; 
+  max-width: 600px;
+  margin: 0 20px; 
 }
 
 .search-wrapper {
@@ -86,6 +90,13 @@
   font-size: 1rem;
   border-radius: 4px;
   border: none;
+}
+
+
+
+.title {
+  font-size: 1.5rem;
+  white-space: nowrap;
 }
 
 
