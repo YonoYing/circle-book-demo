@@ -85,7 +85,7 @@ const handleBuyButtonClick = async () => {
 
     <div class="right-half">
       <h1 class="book-title">{{ book.title }}</h1>
-      <p class="book-author"><strong>{{ book.author }}</strong> | {{ googleBook.publishedDate || 'Unknown' }}</p>
+      <p class="book-author"><strong>{{ book.author }}</strong> | {{ googleBook?.publishedDate || 'Unknown' }}</p>
       <p class="blurb">{{ googleBook?.description || 'No description available.' }}</p>
       <p class="book-price"><strong>Price:</strong> ${{ book.price?.toFixed(2) || 'N/A' }}</p>
       <button 
