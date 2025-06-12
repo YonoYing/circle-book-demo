@@ -22,6 +22,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import BookCard from '../../components/BookCard.vue'
 import HeaderBar from '../../components/HeaderBar.vue'
 import GenreList from '../../components/GenreList.vue'
+import { getBooks } from '../../services/bookService.js'
 
 const books = ref([])
 const searchQuery = ref('')
@@ -39,8 +40,7 @@ const genres = [
 
 const fetchBooks = async () => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/books`)
-    const data = await response.json()
+    const data = await getBooks()
     books.value = data
   } catch (error) {
     console.error('Failed to fetch books:', error)

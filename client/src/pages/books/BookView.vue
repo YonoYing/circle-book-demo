@@ -2,6 +2,8 @@
 import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import HeaderBar from '../../components/HeaderBar.vue'
+import { getBookById, purchaseBook } from '../../services/bookService.js'
+import { getGoogleBookByIsbn } from '../../services/googleBookService.js'
 
 const route = useRoute()
 const book = ref(null)
@@ -12,10 +14,7 @@ const coverUrl = ref('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1yg
 
 const fetchBook = async () => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/books/${route.params.id}`)
-    if (!response.ok) throw new Error('Book not found')
-    const data = await response.json()
-    book.value = data.book
+    book.value = await getBookById(route.params.id)
   } catch (err) {
     console.error(err)
   }
@@ -23,15 +22,12 @@ const fetchBook = async () => {
 
 const fetchGoogleBook = async (isbn) => {
   try {
-    const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`)
-    const data = await response.json()
-    if (data.totalItems > 0) {
-      googleBook.value = data.items[0].volumeInfo
-    }
+    googleBook.value = await getGoogleBookByIsbn(isbn)
   } catch (err) {
     console.error('Error fetching from Google Books API:', err)
+  } finally {
+    googleBookResponse.value = true
   }
-  googleBookResponse.value = true
 }
 
 watch(book, (newBook) => {
@@ -44,24 +40,10 @@ onMounted(fetchBook)
 
 const handleBuyButtonClick = async () => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_APP_API_BASE_URL}/books/${route.params.id}/purchase`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        bookId: book.id,  
-      }),
-    })
-    
-    if (response.ok) {
-      const data = await response.json()
-      book.value = data.book
-    } else {
-      alert('There was an error processing your purchase.')
-    }
+    const updatedBook = await purchaseBook(route.params.id)
+    book.value = updatedBook
   } catch (error) {
-    console.error('Error with the POST request:', error)
+    console.error('Error purchasing book:', error)
     alert('There was an error processing your purchase.')
   }
 }

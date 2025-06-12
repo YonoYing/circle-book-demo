@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
+import { getGoogleCoverByIsbn } from '../services/googleBookService.js'
 
 const props = defineProps({
   book: Object
@@ -13,23 +14,17 @@ function goToBook() {
 
 const coverUrl = ref('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1yg_rIUE_FzrkgJGIrpCu_e45OFLXH5GByg&s')
 
-// Google Books cover fetch based on ISBN
 watchEffect(async () => {
   if (!props.book?.isbn) return
   try {
-    const response = await fetch(
-      `https://www.googleapis.com/books/v1/volumes?q=isbn:${props.book.isbn}`
-    )
-    const data = await response.json()
-    const image = data.items?.[0]?.volumeInfo?.imageLinks?.thumbnail
-    if (image) {
-      coverUrl.value = image
-    }
+    const image = await getGoogleCoverByIsbn(props.book.isbn)
+    if (image) coverUrl.value = image
   } catch (error) {
     console.error('Google Books API error:', error)
   }
 })
 </script>
+
 
 <template>
   <div class="book-card" @click="goToBook">
